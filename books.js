@@ -18,7 +18,7 @@ mongoose
   });
 console.log("mmmmmm");
 app.use(cors());
-
+app.use(express.json());
 let str = 1;
 // const url = `http://books.toscrape.com/catalogue/category/books_1/page-${str}.html`;
 
@@ -42,20 +42,20 @@ const bookData = async (str) => {
       ratings = $(this).find(".star-rating").attr("class").split(" ")[1];
       link = $(this).find("h3 a").attr("href");
 
-      const newData = await Booksdata.create({
-        title,
-        price,
-        stock,
-        ratings,
-        link,
-      });
-      await newData.save();
+      // const newData = await Booksdata.create({
+      //   title,
+      //   price,
+      //   stock,
+      //   ratings,
+      //   link,
+      // });
+      // await newData.save();
 
-      book_List.push({ title, price, stock, ratings, link });
+      // book_List.push({ title, price, stock, ratings, link });
     });
 
-    console.log(type);
-    console.log(book_List);
+    // console.log(type);
+    // console.log(book_List);
   } catch (error) {
     console.error(error);
   }
@@ -66,16 +66,33 @@ for (let i = str; i <= 50; i++) {
 }
 
 app.get("/title", async (req, res) => {
-  const data = await Booksdata.find({}, { title: 1, _id: 0 });
+  const data = await Booksdata.find({}, { title: 1, _id:1 });
   res.json({ data });
 });
 app.get("/ratings", async (req, res) => {
-  const data = await Booksdata.find({}, { title: 1, ratings: 1, _id: 0 });
+  const data = await Booksdata.find({}, { title: 1, ratings: 1, _id: 1 });
   res.json({ data });
 });
 app.get("/link", async (req, res) => {
-  const data = await Booksdata.find({}, { link: 1, _id: 0 });
+  const data = await Booksdata.find({}, { link: 1, _id: 1 });
   res.json({ data });
+});
+
+app.post('/search', async (req, res) => {
+  console.log(req.body);
+  const {data} = req.body;
+  const dd = await Booksdata.find({title:data});
+  const dt = await Booksdata.find({link:data})
+  // console.log(dd);
+  if(dd && dd.length>0){
+    res.json({ans:dd,msg:"This Title exist",success:true});
+  }
+  else if(dt && dt.length>0){
+    res.json({ans:dt,msg:"This Url exist",success:true});
+  }
+  else{
+  res.json({msg:"This Url / Title doesn't exist",success:false });
+  }
 });
 
 app.listen(3002, () => {
