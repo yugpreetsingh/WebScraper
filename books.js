@@ -1,34 +1,22 @@
 const express = require("express");
-
 const app = express();
 const cheerio = require("cheerio");
 const axios = require("axios");
 const cors = require("cors");
 
-const Booksdata = require("./model");
-
-const mongoose = require("mongoose");
-mongoose
-  .connect("mongodb://127.0.0.1:27017/books")
-  .then((result) => {
-    console.log("success");
-  })
-  .catch((err) => {
-    console.log("err");
-  });
-console.log("mmmmmm");
+const fs = require("fs");
+// const wstream = fs.createWriteStream("./downloads/text.txt");
 app.use(cors());
 app.use(express.json());
 let str = 1;
-// const url = `http://books.toscrape.com/catalogue/category/books_1/page-${str}.html`;
+const url = `http://books.toscrape.com/catalogue/category/books_1/page-${str}.html`;
 
 const book_List = [];
 
 const bookData = async (str) => {
   try {
-    const response = await axios.get(
-      `http://books.toscrape.com/catalogue/category/books_1/page-${str}.html`
-    );
+    const response = await axios.get(`url`);
+    const htmlData = await response?.data;
     const $ = cheerio.load(response.data);
 
     const type = $("h1").text();
@@ -51,8 +39,11 @@ const bookData = async (str) => {
       // });
       // await newData.save();
 
-      // book_List.push({ title, price, stock, ratings, link });
+      book_List.push({ title, price, stock, ratings, link });
+      fs.writeFile(`./downloads/page-${str}.txt`, htmlData, () => {});
     });
+
+    // wstream.write(`${htmlData}`);
 
     // console.log(type);
     // console.log(book_List);
@@ -61,12 +52,15 @@ const bookData = async (str) => {
   }
 };
 
+// bookData(str++);
+
 for (let i = str; i <= 50; i++) {
   bookData(str++);
+  console.log(`page ${i} downloaded`);
 }
 
 app.get("/title", async (req, res) => {
-  const data = await Booksdata.find({}, { title: 1, _id:1 });
+  const data = await Booksdata.find({}, { title: 1, _id: 1 });
   res.json({ data });
 });
 app.get("/ratings", async (req, res) => {
@@ -78,20 +72,18 @@ app.get("/link", async (req, res) => {
   res.json({ data });
 });
 
-app.post('/search', async (req, res) => {
+app.post("/search", async (req, res) => {
   console.log(req.body);
-  const {data} = req.body;
-  const dd = await Booksdata.find({title:data});
-  const dt = await Booksdata.find({link:data})
+  const { data } = req.body;
+  const dd = await Booksdata.find({ title: data });
+  const dt = await Booksdata.find({ link: data });
   // console.log(dd);
-  if(dd && dd.length>0){
-    res.json({ans:dd,msg:"This Title exist",success:true});
-  }
-  else if(dt && dt.length>0){
-    res.json({ans:dt,msg:"This Url exist",success:true});
-  }
-  else{
-  res.json({msg:"This Url / Title doesn't exist",success:false });
+  if (dd && dd.length > 0) {
+    res.json({ ans: dd, msg: "This Title exist", success: true });
+  } else if (dt && dt.length > 0) {
+    res.json({ ans: dt, msg: "This Url exist", success: true });
+  } else {
+    res.json({ msg: "This Url / Title doesn't exist", success: false });
   }
 });
 
