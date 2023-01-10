@@ -7,6 +7,7 @@ function App() {
   const [lin, setLin] = useState({}); //link
   const [inp, setInp] = useState(""); //Input value
   const [search, setSearch] = useState({}); //Search data
+  const [searcherr,setSearcherr]= useState({});
   const fun = (e) => {
     const val = e.target.name;
     if (val == "title") {
@@ -42,7 +43,9 @@ function App() {
         .catch((err) => {
           console.log(err);
         });
+
     }
+    setInp("");
   };
   const func = (e) => {
     axios
@@ -55,7 +58,9 @@ function App() {
           setRat({});
           setData({});
           setLin({});
-          setInp("");
+        }
+        else{
+          setSearcherr(res.data.msg);
         }
       })
       .catch((err) => {
@@ -85,6 +90,7 @@ function App() {
             <input
               placeholder="Title Or Url"
               onKeyDown={keyDownHandler}
+              value={inp}
               onChange={(e) => {
                 setInp(e.target.value);
               }}
@@ -152,7 +158,7 @@ function App() {
                   className="col-5 border-success form-control"
                   key={search._id}
                 >
-                  <h2 className="fs-4 ">Empty search</h2>
+                  <h2 className="fs-4 ">{(searcherr && searcherr.length>0)?searcherr:"Empty search"}</h2>
                 </div>
               </>
             )}
