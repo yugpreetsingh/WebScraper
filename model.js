@@ -22,6 +22,23 @@ const Books = new mongoose.Schema(
       type: String,
       required: true,
     },
+    upc:{
+      type:String,
+      required:true,
+    },
+    review:{
+      type:String,
+      required:true,
+    },
+    tax:{
+      type:String,
+      required:true,
+    }
+    ,
+    desc:{
+      type:String,
+      required:true,
+    }
   },
   { timestamps: true }
 );

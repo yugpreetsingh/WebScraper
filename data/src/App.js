@@ -49,18 +49,22 @@ function App() {
   };
   const func = (e) => {
     axios
-      .post("http://localhost:3002/search", { data: inp })
+      .post("http://localhost:3002/search", { data:inp })
       .then((res) => {
         if (res.data.success == true) {
-          // console.log(res.data.ans[0]);
-
+          console.log(res.data.ans);
           setSearch(res.data.ans[0]);
           setRat({});
           setData({});
           setLin({});
         }
         else{
+          console.log(res.data.msg);
           setSearcherr(res.data.msg);
+          setRat({});
+          setData({});
+          setLin({});
+          setSearch({});
         }
       })
       .catch((err) => {
@@ -102,6 +106,7 @@ function App() {
         </div>
         <div className="container mx-auto mt-5">
           <div className="row row-cols-2">
+
             {data && data.length > 0 ? (
               data.map((item) => (
                 <div className="col-5" key={item._id}>
