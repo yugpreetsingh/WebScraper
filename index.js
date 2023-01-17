@@ -1,7 +1,7 @@
-const fillData = require('./books');
-const mongoData = require('./dataMongo');
-const rotues = require('./api');
+const fillData = require("./books");
+const mongoData = require("./dataMongo");
+const rotues = require("./api");
 fillData(false);
-mongoData(true);
+mongoData(false);
 
 rotues();
