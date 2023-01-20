@@ -38,7 +38,7 @@ app.get("/title", async (req, res) => {
   });
   
   app.listen(3002, () => {
-    console.log("running");
+    console.log("Api Function Alive");
   });
   
 }

@@ -14,7 +14,7 @@ let currentDate = `${day}-${month}-${year}`;
 if (!fs.existsSync(`./downloads/${currentDate}`)) {
   fillData(true);
 } else {
-  console.log("Folder already exists!");
+  console.log(`Folder with name ${currentDate} already exists!`);
   mongoData(true);
 }
 

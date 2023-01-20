@@ -16,14 +16,14 @@ const bookData = async (str) => {
     let year = date.getFullYear();
 
     let currentDate = `${day}-${month}-${year}`;
-    console.log(currentDate);
+    // console.log(currentDate);
 
     if (!fs.existsSync(`./downloads/${currentDate}`)) {
       fs.mkdir(`./downloads/${currentDate}`, (err) => {
         if (err) {
           return console.error(err);
         }
-        console.log("Directory created successfully!");
+        console.log(`Directory "${currentDate}" created successfully!`);
       });
     }
 
@@ -36,21 +36,20 @@ const bookData = async (str) => {
     let length = 0;
     if (fs.existsSync(`./downloads/${currentDate}`)) {
       length = fs.readdirSync(`./downloads/${currentDate}`).length;
-      console.log("LENGTH " + length);
+      // console.log("LENGTH " + length);
     }
     if (length == 50) {
-      console.log("Calling mongoData");
+      console.log(`Calling mongoData for filling data of ${length} page`);
       mongoData(true);
     }
 
     console.log(`page ${str} downloaded`);
   } catch (error) {
-    console.error(error);
+    console.error("The Link was invalid Or Problem in directory");
   }
 };
 
 const fillData = (val) => {
-  // bookData(str++);
   if (val) {
     for (let i = 1; i <= 50; i++) {
       bookData(i);

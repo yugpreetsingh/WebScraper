@@ -4,14 +4,16 @@ const axios = require("axios");
 var fs = require("fs");
 var path = require("path");
 const mongoose = require("mongoose");
+mongoose.set('strictQuery', true)
 mongoose
   .connect("mongodb://127.0.0.1:27017/books")
   .then((result) => {
-    console.log("success");
+    console.log("MongoDb connected");
   })
   .catch((err) => {
-    console.log("err");
+    console.log("Mongo Connection failed");
   });
+  
 
 const date = new Date();
 
@@ -37,13 +39,11 @@ const dataMongo = (pt) => {
     let ratings = $(this).find(".star-rating").attr("class").split(" ")[1];
     let link = $(this).find("h3 a").attr("href");
     let stock = $(this).find(".availability").text().trim();
-    //  console.log(link.substring(5));
 
     const response = await axios.get(
       `http://books.toscrape.com/catalogue${link.substring(5)}`
     );
-    //  console.log(`http://books.toscrape.com/catalogue${link.substring(5)}`);
-    const htmlData = await response?.data;
+      const htmlData = await response?.data;
     let np = cheerio.load(htmlData);
     let article = np("article");
 
@@ -79,17 +79,7 @@ const mongoData = (val) => {
     let length = 0;
     if (fs.existsSync(`./downloads/${currentDate}`)) {
       length = fs.readdirSync(`./downloads/${currentDate}`).length;
-      console.log(length + " INSIDE data mongo");
     }
-
-    if (fs.existsSync(`./downloads/${currentDate}`)) {
-      fs.readdir(`./downloads/${currentDate}`, (e, f) => {
-        console.log("dir length= " + f.length);
-      });
-    } else {
-      console.log("THIS IS THE ERROR");
-    }
-
     console.log(`Filling data of ${length} pages`);
     for (let i = 1; i <= length; i++) {
       setTimeout(() => {
