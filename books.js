@@ -1,5 +1,7 @@
 const fs = require("fs");
 const axios = require("axios");
+const mongoData = require("./dataMongo");
+
 const bookData = async (str) => {
   try {
     const response = await axios.get(
@@ -14,10 +16,10 @@ const bookData = async (str) => {
     let year = date.getFullYear();
 
     let currentDate = `${day}-${month}-${year}`;
-    console.log(currentDate); // "17-6-2022"
+    console.log(currentDate);
 
     if (!fs.existsSync(`./downloads/${currentDate}`)) {
-      fs.mkdirSync(`./downloads/${currentDate}`, (err) => {
+      fs.mkdir(`./downloads/${currentDate}`, (err) => {
         if (err) {
           return console.error(err);
         }
@@ -30,6 +32,17 @@ const bookData = async (str) => {
       htmlData,
       () => {}
     );
+
+    let length = 0;
+    if (fs.existsSync(`./downloads/${currentDate}`)) {
+      length = fs.readdirSync(`./downloads/${currentDate}`).length;
+      console.log("LENGTH " + length);
+    }
+    if (length == 50) {
+      console.log("Calling mongoData");
+      mongoData(true);
+    }
+
     console.log(`page ${str} downloaded`);
   } catch (error) {
     console.error(error);

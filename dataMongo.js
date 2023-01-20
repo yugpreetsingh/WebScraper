@@ -73,17 +73,28 @@ const dataMongo = (pt) => {
     }
   });
 };
-const length = fs.readdirSync(
-  path.join(__dirname, `./downloads/${currentDate}`)
-).length;
-console.log(length);
 
 const mongoData = (val) => {
   if (val) {
+    let length = 0;
+    if (fs.existsSync(`./downloads/${currentDate}`)) {
+      length = fs.readdirSync(`./downloads/${currentDate}`).length;
+      console.log(length + " INSIDE data mongo");
+    }
+
+    if (fs.existsSync(`./downloads/${currentDate}`)) {
+      fs.readdir(`./downloads/${currentDate}`, (e, f) => {
+        console.log("dir length= " + f.length);
+      });
+    } else {
+      console.log("THIS IS THE ERROR");
+    }
+
+    console.log(`Filling data of ${length} pages`);
     for (let i = 1; i <= length; i++) {
       setTimeout(() => {
         dataMongo(i);
-      }, 1000);
+      }, 2000);
     }
   }
 };
