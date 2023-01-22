@@ -2,6 +2,16 @@ const fs = require("fs");
 const axios = require("axios");
 const mongoData = require("./dataMongo");
 
+const date = new Date();
+
+let day = date.getDate();
+let month = date.getMonth() + 1;
+let year = date.getFullYear();
+
+let currentDate = `${day}-${month}-${year}`;
+
+let flag = false;
+
 const bookData = async (str) => {
   try {
     const response = await axios.get(
@@ -9,39 +19,19 @@ const bookData = async (str) => {
     );
     const htmlData = await response?.data;
 
-    const date = new Date();
-
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-
-    let currentDate = `${day}-${month}-${year}`;
     // console.log(currentDate);
 
-    if (!fs.existsSync(`./downloads/${currentDate}`)) {
-      fs.mkdir(`./downloads/${currentDate}`, (err) => {
-        if (err) {
-          return console.error(err);
-        }
-        console.log(`Directory "${currentDate}" created successfully!`);
-      });
-    }
-
-    fs.writeFile(
+    fs.writeFileSync(
       `./downloads/${currentDate}/page-${str}.txt`,
       htmlData,
       () => {}
     );
 
-    let length = 0;
-    if (fs.existsSync(`./downloads/${currentDate}`)) {
-      length = fs.readdirSync(`./downloads/${currentDate}`).length;
-      // console.log("LENGTH " + length);
+    if (!fs.existsSync(`./downloads/${currentDate}/page-${str}.txt`)) {
+      flag = true;
     }
-    if (length == 50) {
-      console.log(`Calling mongoData for filling data of ${length} page`);
-      mongoData(true);
-    }
+
+    // console.log("LENGTH " + length);
 
     console.log(`page ${str} downloaded`);
   } catch (error) {
@@ -49,10 +39,30 @@ const bookData = async (str) => {
   }
 };
 
-const fillData = (val) => {
+const fillData = async (val) => {
   if (val) {
+    fs.mkdir(`./downloads/${currentDate}`, (err) => {
+      if (err) {
+        return console.error(err);
+      }
+      console.log(`Directory "${currentDate}" created successfully!`);
+    });
+
     for (let i = 1; i <= 50; i++) {
-      bookData(i);
+      // console.log(flag);
+
+      if (flag) {
+        console.log(`Error in filling page "${i}"`);
+        break;
+      }
+      await bookData(i);
+
+      let length = 0;
+      length = fs.readdirSync(`./downloads/${currentDate}`).length;
+      if (length == 50) {
+        console.log(`Calling mongoData for filling data of ${length} page`);
+        mongoData(true);
+      }
     }
   }
 };
